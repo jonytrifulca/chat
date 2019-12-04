@@ -36,6 +36,8 @@ io.on('connection', (client) => {
 
         //notifico solo a los de esa sala
         client.broadcast.to(data.sala).emit('listaPersona', usuarios.getPersonasPorSala(data.sala));
+        //envio mensaje de conexion
+        client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Administrador', mensaje));
 
 
 
@@ -63,7 +65,7 @@ io.on('connection', (client) => {
 
 
     //cuando los usuarios envian un mensaje al server
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
         let persona = usuarios.getPersona(client.id);
         let mensaje = crearMensaje(persona.nombre, data.mensaje);
 
@@ -74,6 +76,9 @@ io.on('connection', (client) => {
 
         //se lo reenvio a la gente de la sala
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje);
+
+        //confirmo al tio k su mensaje se envio
+        callback(mensaje);
 
 
     });
